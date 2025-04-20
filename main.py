@@ -80,6 +80,7 @@ if __name__ == "__main__":
         )
         plot_driver.figure.show()
         plot_driver.save2img("./test.png")
+        input("...")
     else:
         CAnimateDriver(
             chan,
