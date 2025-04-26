@@ -5,14 +5,15 @@ from Plot.AnimatePlotDriver import CAnimateDriver
 from Plot.PlotDriver import CPlotDriver
 
 if __name__ == "__main__":
-    code = "sz.000001"
-    begin_time = "2018-01-01"
-    end_time = None
+    code = "sh.600009"
+    begin_time = "2024-04-18"
+    end_time = "2024-09-25"
     data_src = DATA_SRC.BAO_STOCK
     lv_list = [KL_TYPE.K_DAY]
 
     config = CChanConfig({
-        "bi_strict": True,
+        "bi_algo": "advanced",
+        "bi_strict": False,
         "trigger_step": False,
         "skip_step": 0,
         "divergence_rate": float("inf"),
@@ -24,11 +25,12 @@ if __name__ == "__main__":
         "bs_type": '1,2,3a,1p,2s,3b',
         "print_warning": True,
         "zs_algo": "normal",
+        "zs_combine": False,
     })
 
     plot_config = {
         "plot_kline": True,
-        "plot_kline_combine": True,
+        "plot_kline_combine": False,
         "plot_bi": True,
         "plot_seg": True,
         "plot_eigen": False,
@@ -79,7 +81,7 @@ if __name__ == "__main__":
             plot_para=plot_para,
         )
         plot_driver.figure.show()
-        plot_driver.save2img("./test.png")
+        # plot_driver.save2img("./test.png")
         input("...")
     else:
         CAnimateDriver(

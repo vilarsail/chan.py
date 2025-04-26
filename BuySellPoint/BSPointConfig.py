@@ -16,6 +16,14 @@ class CBSPointConfig:
 
 
 class CPointConfig:
+    """
+    bs_type：关注的买卖点类型，逗号分隔，默认"1,1p,2,2s,3a,3b"
+    1,2：分别表示1，2，3类买卖点
+    2s：类二买卖点
+    1p：盘整背驰1类买卖点
+    3a：中枢出现在1类后面的3类买卖点（3-after）
+    3b：中枢出现在1类前面的3类买卖点（3-before）
+    """
     def __init__(self,
                  divergence_rate,            # 背驰比例阈值（如0.618等）
                  min_zs_cnt,                 # 最少中枢个数要求

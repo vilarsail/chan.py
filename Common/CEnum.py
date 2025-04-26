@@ -65,7 +65,10 @@ class BSP_TYPE(Enum):
     def main_type(self) -> BSP_MAIN_TYPE:
         return self.value[0]  # type: ignore
 
-
+# autype：复权类型，传递给获取数据接口，默认为 AUTYPE.QFQ,即前复权，可选
+# AUTYPE.QFQ
+# AUTYPE.HFQ
+# AUTYPE.NONE
 class AUTYPE(Enum):
     QFQ = auto()
     HFQ = auto()

@@ -286,7 +286,17 @@ class CChan:
             for lv_idx, klu_iter in enumerate(self.init_lv_klu_iter(stockapi_cls)):
                 self.add_lv_iter(lv_idx, klu_iter)
             # 初始化 K 线单位缓存和上次时间
+            # klu_cache：
+            #   - 用途 ：在递归加载多级别K线时，用于临时存储当前处理层级的K线单元
+            #   - 存储数据 ：每个层级的最后一个未完成处理的CKLine_Unit对象
+            #   - 作用场景 ：当处理父级别K线时，如果子级别K线的时间超过父级K线时间，会将当前子级K线暂存，待父级处理完成后再继续处理
             self.klu_cache: List[Optional[CKLine_Unit]] = [None for _ in self.lv_list]
+            # - 用途 ：跟踪记录每个K线层级最后处理的时间戳
+            # - 存储数据 ：每个层级最后处理的K线时间（CTime对象）
+            # - 核心作用 ：
+            #   - 确保K线时间的单调递增性（通过 kline_unit.time > self.klu_last_t[lv_idx] 校验）
+            #   - 防止K线时间倒流导致的分析错误
+            #   - 跨级别时间对齐检查的基础参照
             self.klu_last_t = [CTime(1980, 1, 1, 0, 0) for _ in self.lv_list]
 
             # 调用 load_iterator 从最高级别开始计算，返回迭代器
@@ -348,6 +358,10 @@ class CChan:
         # 获取当前处理的 K 线级别
         cur_lv = self.lv_list[lv_idx]
         # 获取当前级别上一个 K 线单位 (如果存在)
+        # 这实际是三次__getitem__方法的链式调用：
+        # - 第一次： self[lv_idx] → 返回CKLine_List对象
+        # - 第二次： CKLine_List[-1] → 返回最后一个K线容器（CKLine_Container）
+        # - 第三次： CKLine_Container[-1] → 返回容器中的最后一个K线单元（CKLine_Unit）
         pre_klu = self[lv_idx][-1][-1] if len(self[lv_idx]) > 0 and len(self[lv_idx][-1]) > 0 else None
 
         # 循环处理当前级别的 K 线单位

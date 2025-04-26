@@ -168,6 +168,7 @@ class CKLine_List:
         """
         # 设置技术指标
         klu.set_metric(self.metric_model_lst)
+        print(klu)
 
         if len(self.lst) == 0:  # 首个K线
             self.lst.append(CKLine(klu, idx=0))

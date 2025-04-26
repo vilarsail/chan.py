@@ -253,7 +253,7 @@ class CBi:
         return peak
 
     def Cal_MACD_half(self, is_reverse):
-        # 半笔MACD面积
+        # 半笔MACD面积，"half"的含义 ：仅计算DIFF与DEA交叉后的区域面积
         return self.Cal_MACD_half_reverse() if is_reverse else self.Cal_MACD_half_obverse()
 
     @make_cache
