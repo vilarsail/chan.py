@@ -5,11 +5,11 @@ from Plot.AnimatePlotDriver import CAnimateDriver
 from Plot.PlotDriver import CPlotDriver
 
 if __name__ == "__main__":
-    code = "sh.600009"
-    begin_time = "2024-04-18"
-    end_time = "2024-09-25"
-    data_src = DATA_SRC.BAO_STOCK
-    lv_list = [KL_TYPE.K_DAY]
+    code = "sz000002"
+    begin_time = "2024-11-18"
+    end_time = "2025-05-18"
+    data_src = DATA_SRC.SINA
+    lv_list = [ KL_TYPE.K_DAY,KL_TYPE.K_30M, KL_TYPE.K_15M]
 
     config = CChanConfig({
         "bi_algo": "advanced",
@@ -80,9 +80,9 @@ if __name__ == "__main__":
             plot_config=plot_config,
             plot_para=plot_para,
         )
-        plot_driver.figure.show()
-        # plot_driver.save2img("./test.png")
-        input("...")
+        #plot_driver.figure.show()
+        plot_driver.save2img("./test.png")
+        # input("...")
     else:
         CAnimateDriver(
             chan,

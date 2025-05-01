@@ -259,6 +259,9 @@ class CChan:
         elif self.data_src == DATA_SRC.CSV:
             from DataAPI.csvAPI import CSV_API
             _dict[DATA_SRC.CSV] = CSV_API
+        elif self.data_src == DATA_SRC.SINA:
+            from DataAPI.SinaAPI import SinaAPI
+            _dict[DATA_SRC.SINA] = SinaAPI
         # 如果数据源在字典中，返回对应的API类
         if self.data_src in _dict:
             return _dict[self.data_src]
