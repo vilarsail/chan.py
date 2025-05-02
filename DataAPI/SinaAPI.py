@@ -10,9 +10,11 @@ from .CommonStockAPI import CCommonStockApi
 
 
 SINA_KLINE_DATA_URL = "https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData"
+SINA_REALTIME_DATA_URL = "https://hq.sinajs.cn/list="
 DEFAULT_HEADERS = {
+    "Referer": "https://finance.sina.com.cn/",
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.137 '
-                  'Safari/537.36 LBBROWSER '
+                  'Safari/537.36 LBBROWSER ',
 }
 # 1min数据无法获取
 # 5min可以获取4-5个月数据，
@@ -59,6 +61,54 @@ class SinaAPI(CCommonStockApi):
                 DATA_FIELD.FIELD_CLOSE: float(item["close"]),
                 DATA_FIELD.FIELD_VOLUME: int(item["volume"])
             })
+
+    def get_realtime_data(self):
+        realtime_url = f'{SINA_REALTIME_DATA_URL}{self.code}'
+        realtime_response = requests.get(realtime_url, headers=DEFAULT_HEADERS)
+        realtime_response.encoding = 'gbk'
+        realtime_data = realtime_response.text.split('="')[1].strip('";').split(',')
+        
+        realtime_time = datetime.strptime(f"{realtime_data[30]} {realtime_data[31]}", "%Y-%m-%d %H:%M:%S")
+        return {
+            "day": realtime_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "open": float(realtime_data[1]),
+            "high": float(realtime_data[4]),
+            "low": float(realtime_data[5]),
+            "close": float(realtime_data[3]),
+            "volume": int(realtime_data[8])
+        }
+
+    # 当前逻辑：尝试用实时数据添加一根新K线
+    # 另一个思路：直接修改最后一根K线的close，其他数据不变
+    def try_add_real_time_data(self, raw_data, realtime_data):
+        if not realtime_data:
+            return raw_data
+        realtime_time = datetime.strptime(realtime_data["day"], "%Y-%m-%d %H:%M:%S")
+        if self.k_type == KL_TYPE.K_DAY:
+            # 日线级别：检查日期是否已存在
+            last_day = raw_data[-1]["day"].split()[0] if raw_data else None
+            if last_day and last_day == realtime_time.strftime("%Y-%m-%d"):
+                return raw_data
+            formatted_data = {
+                "day": realtime_time.strftime("%Y-%m-%d"),
+                "open": realtime_data["open"],
+                "high": realtime_data["high"],
+                "low": realtime_data["low"],
+                "close": realtime_data["close"],
+                "volume": realtime_data["volume"]
+            }
+        if self.k_type == KL_TYPE.K_60M or self.k_type == KL_TYPE.K_30M or self.k_type == KL_TYPE.K_15M or self.k_type == KL_TYPE.K_5M:
+            # 日线级别以下，开盘价用上一根K线的收盘价，收盘价用实时收盘价，high取两者大的，low取两者小的，成交量取上一根K线成交量
+            formatted_data = {
+                "day": realtime_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "open": raw_data[-1]["close"],
+                "high": max(raw_data[-1]["close"], realtime_data["close"]),
+                "low": min(raw_data[-1]["close"], realtime_data["close"]),
+                "close": realtime_data["close"],
+                "volume": raw_data[-1]["volume"]
+            }
+        return raw_data + [formatted_data]
+
 
 
 
