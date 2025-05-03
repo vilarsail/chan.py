@@ -197,7 +197,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
                 relate_bsp1=relate_bsp1,
                 feature_dict=feature_dict,
             )
-            print("add bsp : {}, is_buy: {}".format(bs_type, is_buy))
+            # print("add bsp : {}, is_buy: {}".format(bs_type, is_buy))
         else:
             # 如果既不是目标买卖点也不是第一类买卖点，则不创建对象，直接返回
             return
@@ -254,7 +254,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
         # 如果不构成背驰，则标记为非目标买卖点
         if not is_diver:
             is_target_bsp = False
-        print("treat_bsp1: is_diver:{}, divergence_rate: {}".format(is_diver, divergence_rate))
+        # print("treat_bsp1: is_diver:{}, divergence_rate: {}".format(is_diver, divergence_rate))
         # 存储背驰率作为特征
         feature_dict = {'divergence_rate': divergence_rate}
         # 添加该买卖点，类型为 T1

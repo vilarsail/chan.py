@@ -5,18 +5,18 @@ from Plot.AnimatePlotDriver import CAnimateDriver
 from Plot.PlotDriver import CPlotDriver
 
 if __name__ == "__main__":
-    code = "sz000002"
+    code = "sh000002"
     begin_time = "2024-11-18"
     end_time = "2025-05-18"
     data_src = DATA_SRC.SINA
-    lv_list = [ KL_TYPE.K_DAY,KL_TYPE.K_30M, KL_TYPE.K_15M]
+    lv_list = [KL_TYPE.K_DAY ,KL_TYPE.K_60M]
 
     config = CChanConfig({
         "bi_algo": "advanced",
         "bi_strict": False,
         "trigger_step": False,
         "skip_step": 0,
-        "divergence_rate": float("inf"),
+        "divergence_rate": 0.8,
         "bsp2_follow_1": False,
         "bsp3_follow_1": False,
         "min_zs_cnt": 0,
@@ -51,8 +51,8 @@ if __name__ == "__main__":
             # "plot_trendline": True,
         },
         "bi": {
-            # "show_num": True,
-            # "disp_end": True,
+             "show_num": True,
+             "disp_end": True,
         },
         "figure": {
             "x_range": 200,
