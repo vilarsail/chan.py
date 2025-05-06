@@ -52,6 +52,7 @@ def build_chan_object(code):
 
 
 def try_send_message(stock_code, lv_index, bsp):
+    stock_code = stock_code if data_src is DATA_SRC.BAO_STOCK else stock_code.replace("sz", "sz.").replace("sh", "sh.")
     ctime_obj = bsp.klu.time
     bsp_time = datetime(ctime_obj.year, ctime_obj.month, ctime_obj.day, ctime_obj.hour, ctime_obj.minute)
     if bsp_time.date() != datetime.now().date():
@@ -64,7 +65,7 @@ def try_send_message(stock_code, lv_index, bsp):
 
     with open("./Source/stock_code_to_name.json", "r", encoding="utf-8") as f:
         stock_dict = json.load(f)
-    stock_code = stock_code if data_src is DATA_SRC.BAO_STOCK else stock_code.replace("sz", "sz.").replace("sh", "sh.")
+    print(f"")
     stock_name = stock_dict.get(stock_code, "未知股票")
     title, msg = build_bsp_message(
         code=stock_code,
@@ -76,6 +77,7 @@ def try_send_message(stock_code, lv_index, bsp):
         time=bsp_time.strftime("%Y-%m-%d %H:%M")
     )
     send_bark_notification(msg, title)
+    print(f"send message to bark app, title:{title}, message:{msg}")
 
     # 更新发送记录
     if stock_code not in code_to_lv_to_time_dict:
