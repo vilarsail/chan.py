@@ -8,16 +8,27 @@ if __name__ == "__main__":
     一个极其弱智的策略，只交易一类买卖点，底分型形成后就开仓，直到一类卖点顶分型形成后平仓
     只用做展示如何自己实现策略，做回测用~
     """
-    code = "sz.000001"
-    begin_time = "2021-01-01"
-    end_time = None
+    code = "sh.601360"
+    begin_time = "2025-01-01"
+    end_time = "2025-05-18"
     data_src = DATA_SRC.BAO_STOCK
-    lv_list = [KL_TYPE.K_60M,KL_TYPE.K_15M]
+    lv_list = [KL_TYPE.K_60M, KL_TYPE.K_15M]
 
     config = CChanConfig({
-        "trigger_step": True,  # 打开开关！
+        "bi_algo": "advanced",
+        "bi_strict": False,
+        "trigger_step": True,
+        "skip_step": 0,
         "divergence_rate": 0.8,
-        "min_zs_cnt": 1,
+        "bsp2_follow_1": False,
+        "bsp3_follow_1": False,
+        "min_zs_cnt": 0,
+        "bs1_peak": False,
+        "macd_algo": "peak",
+        "bs_type": '1,2,3a,1p,2s,3b',
+        "print_warning": True,
+        "zs_algo": "normal",
+        "zs_combine": False,
     })
 
     chan = CChan(
@@ -45,53 +56,49 @@ if __name__ == "__main__":
         return result
     list1 = []
     list2 = []
-    for chan_snapshot in chan.step_load(): 
+    for chan_snapshot in chan.step_load():
         cur_bsp_list = chan_snapshot.get_bsp(0)  # 获取买卖点列表
         sub_bsp_list = chan_snapshot.get_bsp(1)
-        # cur_bsp_list = chan_snapshot[0].bs_point_lst.getLastestBspList()
-        # sub_bsp_list = chan_snapshot[1].bs_point_lst.getLastestBspList()
         if not cur_bsp_list:  # 为空
             continue
         cur_last_bsp = cur_bsp_list[-1]  # 最后一个买卖点
-        if BSP_TYPE.T1 not in cur_last_bsp.type and BSP_TYPE.T1P not in cur_last_bsp.type:  # 假如只做1类买卖点
-            continue
         cur_lv_chan = chan_snapshot[0]
         sub_lv_chan = chan_snapshot[1]
         if cur_last_bsp.klu.klc.idx != cur_lv_chan[-1].idx:
             continue
-        print(f'bsp1: {cur_lv_chan[-1][-1].time}, is buy: {cur_last_bsp.is_buy}')  
-        # if 0 == len(chan.lv_list)-1 and not cur_lv_chan.bi_list: 
-        #     continue
+        print(f'bsp1: {cur_lv_chan[-1][-1].time}, is buy: {cur_last_bsp.is_buy}')
         cur_last_klu = chan_snapshot[-1][-1]
-        # if last_bsp.klu.idx != last_klu.idx: 
+        # if last_bsp.klu.idx != last_klu.idx:
         #     continue
         sub_bsp = sub_bsp_list[-1]
-            #  if sub_bsp.klu.sup_kl.idx == cur_last_klu.idx and sub_bsp.type2str().find("1") >= 0: 
-        list1.append(sub_bsp.klu.sup_kl.idx)
-        list2.append(cur_last_klu.idx)
-        if sub_bsp.klu.sup_kl.idx == cur_last_klu.idx:
-            print(f'sub bsp1: {sub_lv_chan[-1][-1].time}, is buy: {sub_bsp.is_buy}')  
-        else:
-            print(f"sub_bsp.klu.sup_kl.idx: {sub_bsp.klu.sup_kl.idx}, cur_last_klu.idx: {cur_last_klu.idx}, bsp1: {cur_lv_chan[-1][-1].time}, sub bsp1: {sub_lv_chan[-1][-1].time}")
+        
+        cur_main_klu = cur_lv_chan[-1][-1]
+        sub_main_klu = sub_bsp.klu.sup_kl
+        if sub_main_klu.idx == cur_main_klu.idx:  # 确保比较的是同一层级的K线索引
+            print(f'区间套买点触发! 主级时间:{cur_main_klu.time} 次级时间:{sub_lv_chan[-1][-1].time}')
+        
+            #  if sub_bsp.klu.sup_kl.idx == cur_last_klu.idx and sub_bsp.type2str().find("1") >= 0:
+        # list1.append(sub_bsp.klu.sup_kl.idx)
+        # list2.append(cur_last_klu.idx)
+        # if sub_bsp.klu.sup_kl.idx == cur_last_klu.idx:
+        #     print(f'sub bsp1: {sub_lv_chan[-1][-1].time}, is buy: {sub_bsp.is_buy}')
+        # else:
+        #     print(f"sub_bsp.klu.sup_kl.idx: {sub_bsp.klu.sup_kl.idx}, cur_last_klu.idx: {cur_last_klu.idx}, bsp1: {cur_lv_chan[-1][-1].time}, sub bsp1: {sub_lv_chan[-1][-1].time}")
         # print("no sub bsp found")
     print(list_intersection_with_counts(list1, list2))
     
-    # for chan_snapshot in chan.step_load(): 
+    # for chan_snapshot in chan.step_load():
     #     bsp_list = chan_snapshot.get_bsp()  # 获取买卖点列表
     #     if not bsp_list:  # 为空
+    #         print("bsp empty")
     #         continue
     #     last_bsp = bsp_list[-1]  # 最后一个买卖点
-    #     if BSP_TYPE.T1 not in last_bsp.type and BSP_TYPE.T1P not in last_bsp.type:  # 假如只做1类买卖点
-    #         continue
     #     cur_lv_chan = chan_snapshot[0]
-    #     # if last_bsp.klu.klc.idx != cur_lv_chan[-1].idx:
-    #     #     continue
-    #     # print(f'bsp1: {cur_lv_chan[-1][-1].time}, is buy: {last_bsp.is_buy}')  
     #     if last_bsp.klu.klc.idx != cur_lv_chan[-2].idx:
-    #         continue   
+    #         continue
     #     if cur_lv_chan[-2].fx == FX_TYPE.BOTTOM and last_bsp.is_buy:
     #         print(f'bsp1: {cur_lv_chan[-1][-1].time}, is buy: {last_bsp.is_buy}')
-    #     if cur_lv_chan[-2].fx == FX_TYPE.TOP and last_bsp.is_buy:
+    #     if cur_lv_chan[-2].fx == FX_TYPE.TOP and not last_bsp.is_buy:
     #         print(f'bsp1: {cur_lv_chan[-1][-1].time}, is buy: {last_bsp.is_buy}')
 
     # for chan_snapshot in chan.step_load():  # 每增加一根K线，返回当前静态精算结果
