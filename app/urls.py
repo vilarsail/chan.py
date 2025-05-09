@@ -1,5 +1,5 @@
     # common API
-from app.demo.urls import urlpatterns as demo_urls
+from app.view.urls import urlpatterns as demo_urls
 
 pattern_map = {
     'alarm': demo_urls

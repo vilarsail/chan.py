@@ -1,17 +1,17 @@
+import os
+import tempfile
+import traceback
+
+import matplotlib
+matplotlib.use('Agg')
+
 from Chan import CChan
 from ChanConfig import CChanConfig
 from Common.CEnum import AUTYPE, DATA_SRC, KL_TYPE
-from Plot.AnimatePlotDriver import CAnimateDriver
 from Plot.PlotDriver import CPlotDriver
 
-if __name__ == "__main__":
-    code = "sz002714"
-    begin_time = "2025-01-01"
-    end_time = "2025-05-18"
-    data_src = DATA_SRC.SINA
-    lv_list = [KL_TYPE.K_60M, KL_TYPE.K_30M, KL_TYPE.K_15M, KL_TYPE.K_5M]
-    # lv_list = [KL_TYPE.K_WEEK, KL_TYPE.K_DAY]
 
+def generate_stock_image(stock_code, begin_time, end_time, lv_list):
     config = CChanConfig({
         "bi_algo": "advanced",
         "bi_strict": False,
@@ -28,7 +28,6 @@ if __name__ == "__main__":
         "zs_algo": "normal",
         "zs_combine": False,
     })
-
     plot_config = {
         "plot_kline": True,
         "plot_kline_combine": False,
@@ -46,14 +45,13 @@ if __name__ == "__main__":
         "plot_rsi": False,
         "plot_kdj": False,
     }
-
     plot_para = {
         "seg": {
             # "plot_trendline": True,
         },
         "bi": {
-             "show_num": True,
-             "disp_end": True,
+            "show_num": True,
+            "disp_end": True,
         },
         "figure": {
             "x_range": 400,
@@ -65,28 +63,25 @@ if __name__ == "__main__":
             # },
         }
     }
-    chan = CChan(
-        code=code,
-        begin_time=begin_time,
-        end_time=end_time,
-        data_src=data_src,
-        lv_list=lv_list,
-        config=config,
-        autype=AUTYPE.QFQ,
-    )
-
-    if not config.trigger_step:
-        plot_driver = CPlotDriver(
-            chan,
-            plot_config=plot_config,
-            plot_para=plot_para,
+    try:
+        chan = CChan(
+            code=stock_code,
+            begin_time=begin_time,
+            end_time=end_time,
+            data_src=DATA_SRC.SINA,
+            lv_list=[KL_TYPE[kl_type] for kl_type in lv_list],
+            config=config,
+            autype=AUTYPE.QFQ,
         )
-        #plot_driver.figure.show()
-        plot_driver.save2img("./Test.png")
-        # input("...")
-    else:
-        CAnimateDriver(
-            chan,
-            plot_config=plot_config,
-            plot_para=plot_para,
-        )
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
+            plot_driver = CPlotDriver(
+                chan,
+                plot_config=plot_config,
+                plot_para=plot_para,
+            )
+            print(f"save tmpfile: {tmpfile.name}")
+            plot_driver.save2img(tmpfile.name)
+            tmpfile.close() 
+            return tmpfile.name
+    except Exception as e:
+        print(f"generate_stock_image exception: {traceback.format_exc()}")
