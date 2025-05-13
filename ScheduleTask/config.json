@@ -1,0 +1,15 @@
+{
+  "limit_stock_list": ["sz000002", "sh601360", "sz002714", "sz002157", "sz000799", "sh513180"],
+  "limit_stock_low_level_list": ["K_60M", "K_30M", "K_15M", "K_5M"],
+  "limit_stock_high_level_list": ["K_WEEK", "K_DAY"],
+  "limit_stock_low_level_begin": "2025-01-01",
+  "limit_stock_low_level_end": "2026-01-01",
+  "limit_stock_high_level_begin": "2022-01-01",
+  "limit_stock_high_level_end": "2026-01-01",
+  "full_stock_low_level_list": ["K_15M", "K_5M"],
+  "full_stock_high_level_list": ["K_DAY", "K_60M", "K_30M"],
+  "full_stock_low_level_begin": "2024-01-01",
+  "full_stock_low_level_end": "2026-01-01",
+  "full_stock_high_level_begin": "2024-01-01",
+  "full_stock_high_level_end": "2026-01-01"
+}

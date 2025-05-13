@@ -7,3 +7,5 @@ requests>=2.22.0
 ccxt
 flask
 flask_cors
+apscheduler
+redis
