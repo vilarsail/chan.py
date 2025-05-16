@@ -22,14 +22,15 @@ origin_stock_list = stock_dict.keys()
 stock_list = origin_stock_list if data_src == DATA_SRC.BAO_STOCK else [
     code.replace("sz.", "sz").replace("sh.", "sh") for code in origin_stock_list
 ]
-print(stock_list)
+print(f"full stock_list: {stock_list}")
 
 
 origin_etf_list = etf_dict.keys()
 etf_list = origin_etf_list if data_src == DATA_SRC.SINA else [
-    code.replace("sz", "sz.").replace("sh", "sh.") for code in origin_stock_list
+    code.replace("sz", "sz.").replace("sh", "sh.") for code in origin_etf_list
 ]
 lv_list = [KL_TYPE[kl_type] for kl_type in schedule_config["full_stock_high_level_list"]]
+print(f"full etf list: {etf_list}")
 
 begin_time = schedule_config["full_stock_high_level_begin"]
 end_time = schedule_config["full_stock_high_level_end"]
@@ -98,9 +99,13 @@ def full_stock_high_level_bsp_check_main():
                 if lv_key not in full_bsp_data["level"]:
                     full_bsp_data["level"][lv_key] = {}
                 ctime_obj = last_bsp.klu.time
-                bsp_time = datetime(ctime_obj.year, ctime_obj.month, ctime_obj.day, ctime_obj.hour, ctime_obj.minute) if last_bsp else None
+                bsp_time = datetime(ctime_obj.year, ctime_obj.month, ctime_obj.day, ctime_obj.hour,
+                                    ctime_obj.minute) if last_bsp else None
                 format_bsp_time = bsp_time.strftime("%Y-%m-%d %H:%M:%S") if last_bsp else None
-                full_bsp_data["level"][lv_key][stock_code] = format_bsp_time
+                format_bsp_type = [each_type.value for each_type in last_bsp.type]
+                bsp_info_dict = {"is_buy": last_bsp.is_buy, "type": format_bsp_type, "time": format_bsp_time}
+                print(f"bsp_info_dict: {bsp_info_dict}")
+                full_bsp_data["level"][lv_key][stock_code] = bsp_info_dict
         except Exception as e:
             print(f"full_stock_high_level_bsp_check_main error: {traceback.format_exc()}")
         time.sleep(3)
@@ -144,7 +149,10 @@ def full_etf_high_level_bsp_check_main():
                 ctime_obj = last_bsp.klu.time
                 bsp_time = datetime(ctime_obj.year, ctime_obj.month, ctime_obj.day, ctime_obj.hour, ctime_obj.minute) if last_bsp else None
                 format_bsp_time = bsp_time.strftime("%Y-%m-%d %H:%M:%S") if last_bsp else None
-                full_bsp_data["level"][lv_key][etf_code] = format_bsp_time
+                format_bsp_type = [each_type.value for each_type in last_bsp.type]
+                bsp_info_dict = {"is_buy": last_bsp.is_buy, "type": format_bsp_type, "time": format_bsp_time}
+                print(f"bsp_info_dict: {bsp_info_dict}")
+                full_bsp_data["level"][lv_key][etf_code] = bsp_info_dict
         except Exception as e:
             print(f"full_stock_high_level_bsp_check_main error: {traceback.format_exc()}")
         time.sleep(3)
@@ -155,5 +163,5 @@ def full_etf_high_level_bsp_check_main():
 
 
 if __name__ == "__main__":
-    full_etf_high_level_bsp_check_main()
-    # full_stock_high_level_bsp_check_main()
+    # full_etf_high_level_bsp_check_main()
+    full_stock_high_level_bsp_check_main()

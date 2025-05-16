@@ -12,3 +12,4 @@ cos_config.yaml
 .venv/
 test.png
 Temp
+.DS_Store
