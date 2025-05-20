@@ -163,5 +163,5 @@ def full_etf_high_level_bsp_check_main():
 
 
 if __name__ == "__main__":
-    # full_etf_high_level_bsp_check_main()
-    full_stock_high_level_bsp_check_main()
+    full_etf_high_level_bsp_check_main()
+    # full_stock_high_level_bsp_check_main()

@@ -25,6 +25,12 @@ class FileOperator:
             etf_dict = json.load(f)
             return etf_dict
 
+    @classmethod
+    def load_eft_code_to_name_100_dict(cls):
+        with open("./Source/etf_code_to_name_100.json", "r", encoding="utf-8") as f:
+            etf_dict = json.load(f)
+            return etf_dict
+
     def load_init_files_to_redis(self):
         """将配置文件加载到Redis"""
         try:
@@ -39,6 +45,9 @@ class FileOperator:
             # 加载ETF代码映射
             etf_dict = self.load_eft_code_to_name_dict()
             self.redis_client.set("etf_code_to_name", json.dumps(etf_dict))
+
+            etf_dict = self.load_eft_code_to_name_100_dict()
+            self.redis_client.set("etf_code_to_name_100", json.dumps(etf_dict))
 
             print("配置文件已成功加载到Redis")
         except Exception as e:
