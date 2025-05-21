@@ -14,7 +14,7 @@ redis_client = RedisClient().get_client()
 
 schedule_config = json.loads(redis_client.get(constants.REDIS_KEY_SCHEDULE_CONFIG))
 stock_dict = json.loads(redis_client.get(constants.REDIS_KEY_STOCK_TO_NAME))
-etf_dict = json.loads(redis_client.get(constants.REDIS_KEY_ETF_TO_NAME))
+etf_dict = json.loads(redis_client.get(constants.REDIS_KEY_ETF_TO_NAME_100))
 
 data_src = DATA_SRC.SINA
 

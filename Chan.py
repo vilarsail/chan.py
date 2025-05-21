@@ -21,6 +21,7 @@ from DataAPI.CommonStockAPI import CCommonStockApi
 from KLine.KLine_List import CKLine_List
 # 导入K线单位类
 from KLine.KLine_Unit import CKLine_Unit
+from Common.file_util import FileOperator
 
 
 # 定义缠论主类
@@ -468,3 +469,9 @@ class CChan:
         assert len(self.lv_list) == 1
         # 返回最高级别 (索引为 0) K 线列表的排序买卖点列表
         return self[0].bs_point_lst.getSortedBspList()
+
+    def get_stock_name(self):
+        """根据股票代码获取股票名称"""
+        file_operator = FileOperator()
+        name = file_operator.get_name_by_code(self.code)
+        return name

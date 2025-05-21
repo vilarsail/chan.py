@@ -3,7 +3,6 @@ from datetime import datetime, time
 
 from Common.file_util import FileOperator
 file_operator = FileOperator()
-file_operator.load_init_files_to_redis()
 
 from ScheduleTask.FullStockHighLevelBspCheck import full_etf_high_level_bsp_check_main, \
     full_stock_high_level_bsp_check_main

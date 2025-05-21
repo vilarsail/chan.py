@@ -4,6 +4,8 @@ from typing import Dict, List, Literal, Optional, Tuple, Union
 # 导入 matplotlib 绘图库
 import matplotlib.pyplot as plt
 # 导入 matplotlib 轴对象和图形对象
+plt.rcParams['font.sans-serif'] = ['Songti SC']  # 苹果系统自带宋体
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 # 导入用于绘制矩形的 Patch 对象
@@ -278,7 +280,7 @@ class CPlotDriver:
             # 设置网格线
             set_grid(ax, figure_config.get("grid", "xy"))
             # 设置 Axes 标题
-            ax.set_title(f"{chan.code}/{lv.name.split('K_')[1]}", fontsize=16, loc='left', color='r')
+            ax.set_title(f"{chan.code}-{chan.get_stock_name()}/{lv.name.split('K_')[1]}", fontsize=16, loc='left', color='r')
 
             # 计算当前 Axes 的 X 轴范围
             x_limits = cal_x_limit(meta, x_range)

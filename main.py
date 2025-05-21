@@ -9,7 +9,7 @@ if __name__ == "__main__":
     begin_time = "2025-01-01"
     end_time = "2025-05-18"
     data_src = DATA_SRC.SINA
-    lv_list = [KL_TYPE.K_60M, KL_TYPE.K_30M, KL_TYPE.K_15M, KL_TYPE.K_5M]
+    lv_list = [KL_TYPE.K_60M]
     # lv_list = [KL_TYPE.K_WEEK, KL_TYPE.K_DAY]
 
     config = CChanConfig({

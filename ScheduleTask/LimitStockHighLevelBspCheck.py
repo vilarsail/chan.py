@@ -14,6 +14,9 @@ redis_client = RedisClient().get_client()
 
 schedule_config = json.loads(redis_client.get(constants.REDIS_KEY_SCHEDULE_CONFIG))
 stock_dict = json.loads(redis_client.get(constants.REDIS_KEY_STOCK_TO_NAME))
+etf_dict = json.loads(redis_client.get(constants.REDIS_KEY_ETF_TO_NAME))
+stock_dict.update(etf_dict)
+
 
 data_src = DATA_SRC.SINA
 origin_stock_list = schedule_config["limit_stock_list"]
@@ -70,7 +73,11 @@ def try_send_message(stock_code, lv_index, bsp):
         print(f"message already sent: {stock_code}, {lv_index}, {bsp_time}")
         return
 
-    stock_name = stock_dict.get(stock_code, "未知股票")
+    code_suffix = stock_code[-6:]  # 提取后6位数字
+    # 生成两种可能的股票代码格式
+    possible_codes = [f"sh.{code_suffix}", f"sh{code_suffix}", f"sz.{code_suffix}", f"sz{code_suffix}"]
+    # 查找第一个存在的股票代码
+    stock_name = next((stock_dict[code] for code in possible_codes if code in stock_dict), "未知股票")
     title, msg = build_bsp_message(
         code=stock_code,
         stock_name=stock_name,  # 如果需要股票名称需要额外参数
